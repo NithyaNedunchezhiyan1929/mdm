@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MdmBlockCustomerApollo
+Resources:
+  MdmBlockCustomerApollo:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: 's3://mdm-blockcustomer-apollo-dev/MdmBlockCustomerApollo.zip'
+      FunctionName: MdmBlockCustomerApollo
+      Handler: BlockCustomer.lambda_handler
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: AllAtOnce
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: 1
+      Runtime: python3.8
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0fd912ab5842aebab
+        SubnetIds:
+          - subnet-0ac256bfe183bcb07
+          - subnet-0c539d110a9efb65a
+      MemorySize: 256
+      Role: arn:aws:iam::887422279145:role/MDM_Lambda_SQS
+      Timeout: 60
+      Environment:
+        Variables:
+          Region: us-east-2
+          FN_FIELD_MAP: arn:aws:lambda:us-east-2:887422279145:function:MdmFieldMapping
+          FN_BLOCK_MDM_REC: arn:aws:lambda:us-east-2:887422279145:function:MdmUpdateCMRecordApollo
+          PIPO_AUTH: Basic QVdTVVNFUjpKYW51YXJ5MjAyMA==
+          PIPO_BLOCKCUST: http://vy-rav-ads003.vyaire.com:50000/RESTAdapter/Apollo/CustomerBlock
+          PIPO_USER: AWSUSER
+          PIPO_PASS: January2020
+          PUBLISH_ES_SNS: arn:aws:lambda:us-east-2:887422279145:function:MDMElasticPublishSNS
+          PUBLISH_WF_SNS: arn:aws:lambda:us-east-2:887422279145:function:MDMWorkflowPublishSNS     
